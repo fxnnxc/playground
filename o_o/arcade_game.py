@@ -2,8 +2,6 @@
 # API for the gym Arcade Game 
 # -----------------------
 
-
-
 import gym 
 class PlayArcade(gym.Env):
     def __init__(self, config={}):
@@ -14,6 +12,4 @@ class PlayArcade(gym.Env):
     
     def step(self, action):
         pass 
-    
-    
     
