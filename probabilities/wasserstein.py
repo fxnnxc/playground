@@ -4,14 +4,15 @@ import torch
 import torch.nn as nn 
 
 class SinkhornDistance(nn.Module):
-    def __init__(self, eps, max_iter, reduction="none"):
+    def __init__(self, eps, max_iter, reduction="none", p=1):
         super().__init__()
         self.eps = eps 
         self.max_iter =max_iter 
         self.reduction = reduction
+        self.p = p
         
     def forward(self, x,y):
-        C = self._cost_matrix(x,y)
+        C = self._cost_matrix(x,y,self.p)
         x_points = x.shape[-2]
         y_points = y.shape[-2]
         if x.dim() == 2: 
@@ -21,13 +22,12 @@ class SinkhornDistance(nn.Module):
             
         # --- 
         mu = torch.empty(batch_size, x_points, dtype=torch.float, requires_grad=False).fill_(1.0/x_points).squeeze()
-        nu = torch.empty(batch_size, y_points, dtype=torch.float, requires_grad=False).fill_(1.0/x_points).squeeze()
+        nu = torch.empty(batch_size, y_points, dtype=torch.float, requires_grad=False).fill_(1.0/y_points).squeeze()
         
         u = torch.zeros_like(mu)
         v = torch.zeros_like(nu)
         
-        iteration = 0  #
-        thresh = 1e-1    # stopping 
+        thresh = 1e-3    # stopping 
         
         # --- iteartion 
         for i in range(self.max_iter):
@@ -48,7 +48,7 @@ class SinkhornDistance(nn.Module):
         elif self.reduction == "sum":
             cost = cost.sum()
                     
-        return cost, pi, C
+        return (cost)**(1/self.p), pi, C
             
         
     def M(self, C, u, v):
@@ -56,7 +56,7 @@ class SinkhornDistance(nn.Module):
         
     
     @staticmethod 
-    def _cost_matrix(x,y,p=2):
+    def _cost_matrix(x,y,p=1):
         x_col = x.unsqueeze(-2)
         y_lin = y.unsqueeze(-3)
         C = torch.sum(torch.abs(x_col - y_lin)** p, -1)
@@ -100,3 +100,8 @@ def show_assignments(a, b, P, arrow=False):
     plt.axis('off')
     
     
+
+def samples_to_cdf(a, b):
+    # assume that a and b are 1D samples 
+    cdf_a = range(0,100)
+    cdf_b = range(0,100)
