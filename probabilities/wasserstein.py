@@ -32,8 +32,8 @@ class SinkhornDistance(nn.Module):
         # --- iteartion 
         for i in range(self.max_iter):
             u1 = u 
-            u = self.eps * (torch.log(mu+1e-8) - torch.logsumexp(self.M(C, u, v), dim=-1)) + u 
-            v = self.eps * (torch.log(nu+1e-8) - torch.logsumexp(self.M(C, u, v).transpose(-2, 1), dim=-1)) + v
+            u = u + self.eps * (torch.log(mu+1e-8) - torch.logsumexp(self.M(C, u, v), dim=-1))  # Nx, d   --- summed by all Y
+            v = v + self.eps * (torch.log(nu+1e-8) - torch.logsumexp(self.M(C, u, v).transpose(-2, 1), dim=-1)) # Ny, d  --- summed by all X
             err = (u - u1).abs().sum(-1).mean()
             
             if err.item() < thresh:
@@ -49,17 +49,16 @@ class SinkhornDistance(nn.Module):
             cost = cost.sum()
                     
         return (cost)**(1/self.p), pi, C
-            
         
     def M(self, C, u, v):
-        return (-C + u.unsqueeze(-1) + v.unsqueeze(-2)) / self.eps
+        return (-C + u.unsqueeze(-1) + v.unsqueeze(-2)) / self.eps     # exp (u) x exp(C) exp(v)
         
     
     @staticmethod 
     def _cost_matrix(x,y,p=1):
-        x_col = x.unsqueeze(-2)
-        y_lin = y.unsqueeze(-3)
-        C = torch.sum(torch.abs(x_col - y_lin)** p, -1)
+        x_col = x.unsqueeze(-2) # Nx, 1, d
+        y_lin = y.unsqueeze(-3) # Ny, 1, d
+        C = torch.sum(torch.abs(x_col - y_lin)** p, -1)  # Nx, Ny, d -> (Nx, Ny)
         return C
     
     @staticmethod
@@ -82,6 +81,7 @@ def plot_shinkhorn_result(P, C):
     
     
 def show_assignments(a, b, P, arrow=False):    
+    plt.figure()
     plt.scatter(a[:, 0], a[:, 1])
     plt.scatter(b[:, 0], b[:, 1])
     plt.legend(["a", "b"])
