@@ -1,0 +1,36 @@
+{
+    "jupyter.kernels.filter": [
+        {
+            "path": "~/opt/anaconda3/bin/python",
+            "type": "pythonEnvironment"
+        },
+        {
+            "path": "/usr/bin/python",
+            "type": "pythonEnvironment"
+        },
+        {
+            "path": "/usr/bin/python2",
+            "type": "pythonEnvironment"
+        },
+        {
+            "path": "~/Library/Jupyter/kernels/python3812jvsc74a57bd00b84ed069cf46ecf9216b6ea8103bc04f20df8c5fd5b03df7c392d56a325f968/kernel.json",
+            "type": "jupyterKernelspec"
+        },
+        {
+            "path": "~/Library/Jupyter/kernels/python3812jvsc74a57bd09b0397ef686072e381b6b80eab3f4cd18a1c3836ab10351022b806974b93f7cb/kernel.json",
+            "type": "jupyterKernelspec"
+        },
+        {
+            "path": "/usr/bin/python3",
+            "type": "pythonEnvironment"
+        },
+        {
+            "path": "/opt/homebrew/bin/python3",
+            "type": "pythonEnvironment"
+        },
+        {
+            "path": "~/opt/anaconda3/envs/torch/bin/python",
+            "type": "pythonEnvironment"
+        }
+    ]
+}
