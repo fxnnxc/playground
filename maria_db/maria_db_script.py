@@ -1,6 +1,7 @@
 # pip install pymysql
 import pymysql 
 
+# ==== Connect to DB ====
 conn=None
 cur=None
 
@@ -14,7 +15,7 @@ db_config = {
 conn = pymysql.connect(**db_config)
 cur = conn.cursor()
 
-# Create Table 
+# ===== Create Table =====
 sql = """
         CREATE TABLE IF NOT EXISTS userTable (
             id char(4), 
@@ -24,7 +25,7 @@ sql = """
         """
 cur.execute(sql)
 
-# INSERT 
+# ===== INSERT ===== 
 sql = """
         INSERT INTO userTable
             (id, userName, email, birthYear) VALUES(%s,%s,%s,%s)
@@ -39,7 +40,7 @@ for id, name, email, birthYear in zip([f"id_{i}" for i in range(N)],
 
 conn.commit()
 
-# Select 
+# ===== Select ===== 
 sql = """
         SELECT * FROM userTable
       """
@@ -51,4 +52,5 @@ while (True):
     print(row)
 
 
+# ===== Close Connection ===== 
 conn.close()
