@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "jupyter.kernels.filter": [
         {
             "path": "~/opt/anaconda3/bin/python",
@@ -33,4 +34,8 @@
             "type": "pythonEnvironment"
         }
     ]
+=======
+    "jupyter.kernels.filter": [],
+    "jupyter.jupyterServerType": "remote"
+>>>>>>> 088331262e9b11276a741f2a572ab602de641333
 }
