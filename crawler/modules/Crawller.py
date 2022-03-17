@@ -4,6 +4,39 @@ import time
 import json 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+import pyautogui
+
+class Macro():
+    def __init__(self):
+        self.mouse_position = pyautogui.position()
+        self.gui_size = pyautogui.size()
+        self.figures ={
+            "purple_background": "purple_background.png"
+        }
+    def move_mouse(self, x=None,y=None, wait=1, duration_seconds=0.01):
+        time.sleep(wait)
+        pyautogui.moveTo(x, y, duration=duration_seconds)
+        print("[INFO] mouse is to position ",x,y)
+
+    def click_mouse(self, num=1, wait=1, click_interval_sec=1):
+        time.sleep(wait)
+        x,y = self.mouse_position
+        pyautogui.click(x=x, y=y, clicks=num, interval=click_interval_sec, button='left')
+        print("[INFO] mouse is clicked")
+
+    def find_all_figure_positions(self, figure):
+        figure = self.figures[figure]
+        self.figure_positions = list(pyautogui.locateAllOnScreen(figure, confidence=0.4))
+        for p in range(len(self.figure_positions)):
+            left, top, width, height = self.figure_positions[p]
+            self.figure_positions[p] = {"center_x": left + width//2 ,
+                                        "center_y" :top + height//2,
+                                        "left" : left,
+                                        "top": top, 
+                                        "width": width, 
+                                        "height": height}
+        return self.figure_positions
+
 
 class Crawller(Driver):
     def __init__(self, type="google_chrome"):
@@ -18,8 +51,8 @@ class Crawller(Driver):
                    id=None, 
                    save=True, 
                    multiple=False, 
-                   find_from_history=False,
-                   history_key=None
+                   find_from_history=None,
+                   find_from_element=None,
         ):
 
         if tag is not None:
@@ -35,20 +68,26 @@ class Crawller(Driver):
             by = By.ID
             value = id        
 
-        if find_from_history:
-            engine = self.elements[history_key]
+        if find_from_history is not None:
+            engine = self.elements[find_from_history]
+        elif find_from_element is not None:
+            engine = find_from_element
         else:
             engine = self.driver
 
         elements = engine.find_elements(by=by, value=value)
+        if len(elements) == 0:
+            raise ValueError("Element List is empty with", engine, value ) 
         if not multiple:
             elements = elements[0]
         if save:
-            self.elements[class_name] = elements
+            self.elements[value] = elements
+        
         return elements
 
 
-    def click(self, element):
+    def click(self, element, wait=0.3):
+        time.sleep(wait)
         element.click()
 
     def keyboard_input(self, element, value):
@@ -77,10 +116,31 @@ class Crawller(Driver):
 
 if __name__ == "__main__":
     crawller = Crawller()
+    macro = Macro()
     crawller.get("네이버-부동산-매물")
-    e = crawller.find(class_name="search_input")
-    crawller.click(e)
-    e = crawller.keyboard_input(e, "강남")
-    e = crawller.keyboard_input(e, Keys.ENTER)
-    e = crawller.find(class_name="map_panel")
+    e = crawller.find(class_name="filter_region_inner")
+    hierarchy = crawller.find(class_name="type_complex", find_from_history="filter_region_inner", multiple=True)
+    index = 0
+    crawller.click(hierarchy[0])
+    list_warp = crawller.find(class_name="area_list_wrap")
+    list_complex = crawller.find(tag="li", find_from_element=list_warp, multiple=True)
+    LENGTH = len(list_complex)
+
+    for index in range(LENGTH):
+        try:
+            # ---enter
+            e = crawller.find(class_name="filter_region_inner")
+            hierarchy = crawller.find(class_name="type_complex", find_from_history="filter_region_inner", multiple=True)
+            crawller.click(hierarchy[0],wait=0.5)
+            list_warp = crawller.find(class_name="area_list_wrap")
+            list_complex = crawller.find(class_name="complex_item", find_from_element=list_warp, multiple=True)
+            button = crawller.find(tag="a", find_from_element=list_complex[index])
+            crawller.click(button, wait=0.5)
+            # ---close
+            detail_panel = crawller.find(class_name="detail_panel")
+            close = crawller.find(class_name="btn_close", find_from_element=detail_panel)
+            crawller.click(close)
+        except:
+            print("ERROR at ", index)
+    print("---DONE---")
     time.sleep(10000)

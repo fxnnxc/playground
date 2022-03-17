@@ -10,6 +10,7 @@ class Driver:
         chrome_options = webdriver.ChromeOptions()
         # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument("--window-size=1000x1000")
         chrome_options.add_argument('--disable-dev-shm-usage')
         driver =webdriver.Chrome('chromedriver',chrome_options=chrome_options)
         return driver
