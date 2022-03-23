@@ -1,10 +1,30 @@
 
-from Driver import Driver
 import time 
 import json 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import pyautogui
+
+class Driver:
+    def __init__(self, type):
+        import sys
+        import os
+        os.environ["PATH"] += ":"+os.path.join(os.getcwd(), "data")
+        if type =="google_chrome":
+            self.driver = self.launch_chrome_driver(None) 
+
+        else:
+            raise ValueError("Not implemented driver engine")
+    
+    def launch_chrome_driver(self, options=None):
+        from selenium import webdriver
+        chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument("--window-size=1000x1000")
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        driver =webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+        return driver
 
 class Macro():
     def __init__(self):
@@ -92,6 +112,10 @@ class Crawller(Driver):
 
     def keyboard_input(self, element, value):
         element.send_keys(value)
+        return element
+
+    def keyboard_typing(self, element, string):
+        element.send(string)
         return element
 
     def get(self, addr):
