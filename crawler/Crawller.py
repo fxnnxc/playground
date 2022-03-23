@@ -73,7 +73,9 @@ class Crawller(Driver):
                    multiple=False, 
                    find_from_history=None,
                    find_from_element=None,
+                   wait=1.0
         ):
+        time.sleep(wait)
 
         if tag is not None:
             by = By.TAG_NAME
@@ -106,10 +108,17 @@ class Crawller(Driver):
         return elements
 
 
-    def click(self, element, wait=0.3):
+    def click(self, element, wait=0.3, max_try=10):
+        count = 0
+        clicked = False
         time.sleep(wait)
-        element.click()
-
+        while not clicked and count < max_try:
+            try:
+                element.click()
+                clicked = True
+            except:
+                count +=1
+                print("[Warning] Click Failed with Try: ",count)
     def keyboard_input(self, element, value):
         element.send_keys(value)
         return element
