@@ -19,7 +19,7 @@ class Driver:
     def launch_chrome_driver(self, options=None):
         from selenium import webdriver
         chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument("--window-size=1000x1000")
         chrome_options.add_argument('--disable-dev-shm-usage')
@@ -108,11 +108,11 @@ class Crawller(Driver):
         return elements
 
 
-    def click(self, element, wait=0.3, max_try=10):
+    def click(self, element, wait=0.3, max_try=20):
         count = 0
         clicked = False
-        time.sleep(wait)
         while not clicked and count < max_try:
+            time.sleep(wait)
             try:
                 element.click()
                 clicked = True

@@ -2,6 +2,7 @@ def main():
     import argparse 
     from Crawller import Crawller, Macro
     from scripts import ALL_SCRIPTS 
+    import json 
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--script", type=str)
@@ -17,9 +18,11 @@ def main():
         config = None 
     else:
         import json 
-        config = json.load(args.config_path)
+        with open(args.config_path) as f:
+            config = json.load(f)
     result = script(crawller, macro, config=config)
-    print(result)
+    with open("save.json", "w") as f :
+        json.dump(result, f)
     crawller.driver.close()
 
 if __name__ == "__main__":
