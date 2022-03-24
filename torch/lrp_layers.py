@@ -1,6 +1,9 @@
 import torch
 from torch import nn
 
+
+top_k_percent = 1.0  # Proportion of relevance scores that are allowed to pass.
+
 def relevance_filter(r: torch.tensor, top_k_percent: float = 1.0) -> torch.tensor:
     """Filter that allows largest k percent values to pass for each batch dimension.
 
@@ -30,7 +33,6 @@ def relevance_filter(r: torch.tensor, top_k_percent: float = 1.0) -> torch.tenso
     else:
         return r
 
-top_k_percent = 0.04  # Proportion of relevance scores that are allowed to pass.
 
 
 class RelevancePropagationAdaptiveAvgPool2d(nn.Module):
