@@ -17,4 +17,4 @@ bash shells/gugu_parse_html.sh
 ### Issues 
 
 * you need **chromedriver** fitted to your os. Put it in `./data/` directory
-* 
+* Documentation can be seen in [here](https://www.notion.so/Crawlling-d711b13c16ea41c2bb472312685c045e)
