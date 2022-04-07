@@ -181,3 +181,8 @@ cython_debug/
 
 devel/*
 build/*
+
+modules/*/data/cache
+modules/*/data/cached
+modules/*/results/*
+modules/*/result/*
