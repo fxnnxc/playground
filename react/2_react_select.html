@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="root"></div>
+    </body>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const root = document.getElementById("root");
+        function MinutesToHours(){
+            const [amount ,setAmount] = React.useState(0);
+            const [flipped, setFlipped] = React.useState(false);
+            const onChange = () => {
+                console.log("somebody wrote");
+                setAmount(event.target.value);
+            };
+            const reset = () => {
+                setAmount(0);
+            };
+            const onFlip = () => {
+                reset();
+                setFlipped((current) => !current);
+            }
+            return (
+            <div> 
+                <div>
+                    <h1 className="hi"> Super Conveter </h1>
+                    <label htmlFor="minutes"> Minutes </label>
+                    <input
+                        value={flipped ?  amount*60 : amount}
+                        id="minutes"
+                        placeholder="Minutes"
+                        type="number"
+                        onChange={onChange}
+                        disabled={flipped === true}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="hours"> Hours </label>
+                    <input
+                        id="hours"
+                        value={flipped ? amount : Math.round(amount / 60)}
+                        placeholder="Hours"
+                        type="number"
+                        disabled={flipped === false}
+                        onChange={onChange}
+                    />
+                </div>
+                <button onClick={reset}> Reset </button>
+                <button onClick={onFlip}> Flip </button>
+            </div>
+            );
+        }
+        function KmToM(){
+            return (
+                <div> 
+                    <h1> KM to Mile </h1>
+                </div>
+            )
+        }
+        function App() {
+           const [index, setIndex] = React.useState("-1");
+           const onSelect = (event) => {
+               setIndex(event.target.value);
+               console.log(index);
+           };
+           return (
+                <div>
+                    <h1> Super Converter </h1>
+                    <select value={index} onChange={onSelect}>
+                        <option value ="-1"> select </option> 
+                        <option value ="0"> Minutes & Hours </option> 
+                        <option value ="1"> KM & M </option> 
+                    </select>
+                    <hr />
+                    {index === "-1" ?  "Select your chnage": null}
+                    {index === "0" ?  <MinutesToHours/> : null}
+                    {index === "1" ?  <KmToM/> : null}
+                </div>
+           )
+            }
+        ReactDOM.render(<App/>, root);
+    
+        
+    </script>
+</html>

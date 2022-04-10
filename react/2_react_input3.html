@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="root"></div>
+    </body>
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const root = document.getElementById("root");
+
+        function App() {
+                const [amount ,setAmount] = React.useState();
+                const [flipped, setFlipped] = React.useState(false);
+                const onChange = () => {
+                    console.log("somebody wrote");
+                    setAmount(event.target.value);
+                };
+                const reset = () => {
+                    setAmount(0);
+                };
+                const onFlip = () => {
+                    reset();
+                    setFlipped((current) => !current);
+                }
+                return (
+                <div> 
+                    <div>
+                        <h1 className="hi"> Super Conveter </h1>
+                        <label htmlFor="minutes"> Minutes </label>
+                        <input
+                            value={flipped ?  amount*60 : amount}
+                            id="minutes"
+                            placeholder="Minutes"
+                            type="number"
+                            onChange={onChange}
+                            disabled={flipped === true}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="hours"> Hours </label>
+                        <input
+                            id="hours"
+                            value={flipped ? amount : Math.round(amount / 60)}
+                            placeholder="Hours"
+                            type="number"
+                            disabled={flipped === false}
+                            onChange={onChange}
+                        />
+                    </div>
+                    <button onClick={reset}> Reset </button>
+                    <button onClick={onFlip}> Flip </button>
+                </div>
+                );
+            }
+        ReactDOM.render(<App/>, root);
+    
+        
+    </script>
+</html>
