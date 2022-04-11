@@ -3,14 +3,12 @@ from tqdm import tqdm
 import pandas as pd 
 import nltk
 from nltk.corpus import stopwords
-
-
-
 import gensim.downloader as gensim_api
 
 
 class NLP():
     def __init__(self):
+        print("NLP model is created")
         self.gensim_glve = gensim_api.load('glove-wiki-gigaword-300')
         try:
             self.stwd = stopwords.words('english')
@@ -21,7 +19,7 @@ class NLP():
         self.ko_stopwords = list(pd.read_excel("data/ko_stopwords.xlsx").T.values[0])
         self.en_stopwords = list(pd.read_excel("data/en_stopwords.xlsx").T.values[0])
 
-    def propose_similar_words(self, words:list, topn=5, korean=True, model="glove"):
+    def propose_similar_words(self, words, topn=5, korean=True, model="glove"):
         if model == "glove":
             model = self.gensim_glve
         else:
@@ -43,3 +41,6 @@ class NLP():
 
         return similar_kr_words, similar_en_words
 
+if __name__ == "__main__":
+    nlp = NLP()
+    nlp.propose_similar_words(["김밥", "천국"])

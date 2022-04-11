@@ -30,7 +30,6 @@ classifier = joblib.load('classifier.joblib')
 
 @name_space.route("/")
 class MainClass(Resource):
-
 	def options(self):
 		response = make_response()
 		response.headers.add("Access-Control-Allow-Origin", "*")
@@ -51,6 +50,8 @@ class MainClass(Resource):
 				"result": "The type of iris plant is: " + types[prediction[0]]
 				})
 			response.headers.add('Access-Control-Allow-Origin', '*')
+
+
 			return response
 		except Exception as error:
 			return jsonify({
