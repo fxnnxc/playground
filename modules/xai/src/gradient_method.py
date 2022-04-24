@@ -5,7 +5,7 @@ from torch.autograd import Variable
 import numpy as np
 
 
-def integrated_gradient(model, x, y, baseline, M, criterion=nn.CrossEntropyLoss(), to=torch.device('cuda')):
+def integrated_gradient(model, x, baseline, M, to=torch.device('cuda')):
 
     def make_interpolation(x, base, M):
         lst = [] 
@@ -23,35 +23,29 @@ def integrated_gradient(model, x, y, baseline, M, criterion=nn.CrossEntropyLoss(
     x = x.to(to)
     baseline = baseline.to(to)
     
-    Y = torch.stack([y for i in range(len(X))]).to(to)
-    
     output = model.forward(X)
-    loss = criterion(output, Y)
-    loss.backward()
+    output.sum().backward()
 
     gradient = X.grad
 
     IG = (x-baseline) * gradient.sum(axis=0)
     return IG, X, gradient
 
-def vanila_gradient(model, x, y, criterion=nn.CrossEntropyLoss(), to=torch.device('cuda')):
+def vanila_gradient(model, x, to=torch.device('cuda')):
     model.to(to)
     X = x.unsqueeze(0)
     X = Variable(X, requires_grad=True).to(to)
     X.retain_grad()
     
-    Y = Variable(y).unsqueeze(0).to(to)
-    
     output = model.forward(X)
-    loss = criterion(output, Y)
-    loss.backward()
+    output.sum().backward()
 
     vanila_gradient = X.grad
 
     return vanila_gradient
 
 
-def smooth_gradient(model, x, y, M, sigma, criterion=nn.CrossEntropyLoss(), to=torch.device('cuda')):
+def smooth_gradient(model, x,  M, sigma, to=torch.device('cuda')):
     def make_perturbation(x, M, sigma=1):
         lst = [] 
         for i in range(M):
@@ -62,13 +56,12 @@ def smooth_gradient(model, x, y, M, sigma, criterion=nn.CrossEntropyLoss(), to=t
     model.to(to)
     X = make_perturbation(x, M, sigma)
     X = Variable(X, requires_grad=True).to(to)
-    X.retain_grad()
-    
-    Y = torch.stack([y for i in range(len(X))]).to(to)
+    X.retain_grad()    
     
     output = model.forward(X)
-    loss = criterion(output, Y)
-    loss.backward()
+
+    output.sum().backward()
+
 
     vanila_gradient = X.grad
 
