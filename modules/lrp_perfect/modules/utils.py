@@ -7,10 +7,10 @@ def construct_rho(**rule_description):
         g = rule_description['gamma']
         def _gamma_fn(w):
             w = w + w * torch.max(torch.tensor(0, device=w.device), w) * g
-            return w
+            return nn.Parameter(w)
         return _gamma_fn
     else:
-        return lambda w,b : (w, b)
+        return lambda w : w
 
 def keep_conservative(b): 
     # set bias to 0
@@ -29,5 +29,5 @@ def clone_layer(layer):
     if hasattr(layer, "weight"):
         cloned_layer.weight = nn.Parameter(layer.weight)
     if hasattr(layer, "bias"):
-        cloned_layer.bias = nn.Paramter(layer.bias)
+        cloned_layer.bias = nn.Parameter(layer.bias)
     return cloned_layer

@@ -19,25 +19,28 @@ class LRP():
         super().__init__()
         self.rule_description = rule_descriptions
         self.original_layers = layers
-        self.lrp_modules = self.construct_lrp_modules(self.original_layers, rule_descriptions, device)
-        
         self.mean = mean 
         self.std = std
+        self.lrp_modules = self.construct_lrp_modules(self.original_layers, rule_descriptions, device)
+    
         assert len(layers) == len(rule_descriptions)
 
 
-    def forward(self, x):
+    def forward(self, a):
         # store activations 
-        activations = [] 
+        activations = [a] 
         for i, layer in enumerate(self.original_layers):
-            a = layer(x)
+            a = layer(a)
             activations.append(a)
+        
+        activations = activations[::-1]
+        activations = [a.data.requires_grad_(True) for a in activations]
 
         # compute LRP 
-        relevances = [activations[-1]] 
-        for (Aj, module) in zip(activations[::-1], self.lrp_modules[::-1]):
+        relevances = [torch.softmax(activations.pop(0), dim=-1)] 
+        for (Ai, module) in zip(activations, self.lrp_modules):
             Rj = relevances[-1]
-            Ri = module.forward(Rj, Aj)
+            Ri = module.forward(Rj, Ai)
             relevances.append(Ri)
 
         return relevances, activations 
@@ -50,15 +53,19 @@ class LRP():
             rule = rule_descriptions[i]
             if i==0 and self.mean is not None:
                 lrp_module = LookUpTable["Input"](layer, rule, device,  self.mean, self.std)
+                lrp_module.layer.to(device)
+                lrp_module.layer_n.to(device)
+                lrp_module.layer_p.to(device)
             else:
                 name  = layer.__class__.__name__
                 assert name in LookUpTable
-                lrp_module = LookUpTable[name](layer, rule, device)
+                lrp_module = LookUpTable[name](layer, rule)
+                lrp_module.layer.to(device)
             modules.append(lrp_module)
             used_names.append(name)
         
         self.kind_warning(used_names)
-        return modules 
+        return modules[::-1]
 
     def kind_warning(self, used_names):
         if "ReLU" not in used_names:

@@ -2,9 +2,8 @@ import torch
 from .utils import construct_incr, construct_rho, clone_layer, keep_conservative
 
 class LinearLrp():
-    def __init__(self, layer, rule, device):
-        self.device = device 
-        self.layer = clone_layer(layer).to(self.device)
+    def __init__(self, layer, rule):
+        self.layer = clone_layer(layer)
         self.rho = construct_rho(**rule)
         self.incr = construct_incr(**rule)
 
@@ -13,7 +12,7 @@ class LinearLrp():
 
     def forward(self, Rj, Ai):
         
-        Ai = torch.autograd.Variable(Ai, requires_grad=True).to(self.device)
+        # Ai = torch.autograd.Variable(Ai, requires_grad=True)
         Z = self.layer.forward(Ai)
         S = (Rj / Z).data 
         (Z * S).sum().backward()

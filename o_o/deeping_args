@@ -1,0 +1,8 @@
+
+--epochs 4
+--lr 0.001
+--model-script deeping/vision/template/model.py
+--shared-config deeping/vision/template/shared_config.json
+--callback-script deeping/vision/template/callbacks.py
+--data-loader-script deeping/vision/template/train_loader.py
+--gpus
