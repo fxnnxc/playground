@@ -190,3 +190,6 @@ modules/*/result/*
 
 untracked*
 untracked
+
+wandb/*
+wandb
